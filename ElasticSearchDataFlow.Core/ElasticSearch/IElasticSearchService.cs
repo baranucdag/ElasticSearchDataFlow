@@ -6,7 +6,7 @@ namespace ElasticSearchDataFlow.Core.ElasticSearch
     public interface IElasticSearchService
     {
         Task<ElasticSearchResult> CreateNewIndex(IndexModel indexModel);
-        IReadOnlyDictionary<IndexName, IndexState> GetIndexList();
+        IEnumerable<IndexName> GetIndexList();
         Task<ElasticSearchResult> DeleteIndex(string indexName);
         Task<List<ElasticSearchGetModel<T>>> GetAllDocuments<T>(SearchParameters parameters) where T : class;
         Task<T> GetDocumentById<T>(ElasticSearchModel elasticSearchModel) where T : class;

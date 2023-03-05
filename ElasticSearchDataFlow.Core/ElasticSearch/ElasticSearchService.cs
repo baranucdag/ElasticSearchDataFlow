@@ -47,9 +47,9 @@ namespace ElasticSearchDataFlow.Core.ElasticSearch
         }
 
 
-        public IReadOnlyDictionary<IndexName, IndexState> GetIndexList()
+        public IEnumerable<IndexName> GetIndexList()
         {
-            return _elasticClient.Indices.Get(new GetIndexRequest(Indices.All)).Indices;
+            return _elasticClient.Indices.Get(new GetIndexRequest(Indices.All)).Indices.Keys;
         }
 
 

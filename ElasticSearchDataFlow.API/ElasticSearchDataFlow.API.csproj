@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ElasticSearchDataFlow.Data\ElasticSearchDataFlow.Data.csproj" />
+    <ProjectReference Include="..\ElasticSearchDataFlow.Service\ElasticSearchDataFlow.Service.csproj" />
   </ItemGroup>
 
 </Project>

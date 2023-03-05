@@ -1,6 +1,7 @@
 ﻿using Core.ElasticSearch.Models;
 using ElasticSearchDataFlow.Core.ElasticSearch;
 using ElasticSearchDataFlow.Data.Entites;
+using ElasticSearchDataFlow.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElasticSearchDataFlow.API.Controllers
@@ -10,10 +11,19 @@ namespace ElasticSearchDataFlow.API.Controllers
     public class BlogsController : ControllerBase
     {
         private readonly IElasticSearchService _elasticSearchService;
+        private readonly IBlogService _blogService;
 
-        public BlogsController(IElasticSearchService elasticSearchService)
+        public BlogsController(IElasticSearchService elasticSearchService, IBlogService blogService)
         {
             _elasticSearchService = elasticSearchService;
+            _blogService = blogService;
+        }
+
+        [HttpGet("GetBlogs")]
+        public async Task<IActionResult> GetBlogs()
+        {
+            _blogService.AddBlog();
+            return Ok();
         }
 
         [HttpGet("GetIndexList")]
@@ -79,23 +89,19 @@ namespace ElasticSearchDataFlow.API.Controllers
             List<Blog> blogs = new(){
                 new Blog
                 {
-                    BlogContent= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    BlogTitle= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir." ,
+                    Content= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
+                    Title= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir." ,
                     CategoryId=1,
                     CreatedAt= DateTime.Now,
                     Id=Guid.NewGuid(),
-                    ImagePath="Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    UserId=1
                 },
                  new Blog
                  {
-                    BlogContent= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    BlogTitle= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir." ,
+                    Content= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
+                    Title= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir." ,
                     CategoryId=1,
                     CreatedAt= DateTime.Now,
                     Id=Guid.NewGuid(),
-                    ImagePath="Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    UserId=2
                 }
             };
             return blogs;
@@ -105,13 +111,11 @@ namespace ElasticSearchDataFlow.API.Controllers
         {
             return new Blog
             {
-                BlogContent = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                BlogTitle = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
+                Content = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
+                Title = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
                 CategoryId = 1,
                 CreatedAt = DateTime.Now,
                 Id = Guid.NewGuid(),
-                ImagePath = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                UserId = 1
             };
         }
     }
