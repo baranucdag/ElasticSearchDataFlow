@@ -19,104 +19,43 @@ namespace ElasticSearchDataFlow.API.Controllers
             _blogService = blogService;
         }
 
-        [HttpGet("GetBlogs")]
+        [HttpGet("GetBlogsFromElastic")]
         public async Task<IActionResult> GetBlogs()
         {
-            _blogService.AddBlog();
-            return Ok();
+            var result = _elasticSearchService.GetAllDocuments<Blog>(new SearchParameters { IndexName = "blogs", From = 0, Size = 100 });
+            return Ok(result.Result);
         }
 
-        [HttpGet("GetIndexList")]
-        public async Task<IActionResult> GetIndexList()
+        [HttpGet("GetBlogsFromDb")]
+        public async Task<IActionResult> GetBlogsFromDb()
         {
-            var result = _elasticSearchService.GetIndexList();
+            var result = _blogService.GetBlogList(0, 100); ;
             return Ok(result);
         }
-
-        [HttpGet("GetAllDocuments")]
-        public async Task<IActionResult> GetAllDocuments()
-        {
-            var result = await _elasticSearchService.GetAllDocuments<Blog>(new SearchParameters { IndexName = "blogs", From = 0, Size = 10 });
-            return Ok(result);
-        }
-
 
         [HttpPost("Insert")]
         public async Task<IActionResult> Insert()
         {
-            await _elasticSearchService.InsertAsync<Blog>("blogs", CreateBlog());
+            //only single data should be insert
+            var dataToInsert = _blogService.GetBlogList(0, 100);
+            await _elasticSearchService.InsertAsync<Blog>("blogs", dataToInsert);
             return Ok();
         }
 
         [HttpPost("InsertMany")]
         public async Task<IActionResult> InsertMany()
         {
-            await _elasticSearchService.InsertBulkAsync("blogs", CreateBlogs().ToArray());
+            var dataToInsert = _blogService.GetBlogList(0, 100);
+            await _elasticSearchService.InsertBulkAsync("blogs", dataToInsert.ToArray());
             return Ok();
         }
 
-        [HttpPost("DeleteById")]
-        public async Task<IActionResult> DeleteById()
+        [HttpPost("DeleteById/{id}")]
+        public async Task<IActionResult> DeleteById([FromRoute] string id)
         {
+            _blogService.DeleteById(id);
             await _elasticSearchService.DeleteByElasticIdAsync(new ElasticSearchModel { ElasticId = 1, IndexName = "blogs" });
             return Ok();
-        }
-
-        [HttpPost("CreateIndex")]
-        public async Task<IActionResult> CreateIndex()
-        {
-            var result = await _elasticSearchService.CreateNewIndex(new IndexModel { IndexName = "blogs", });
-            if (!result.Success)
-                return BadRequest(result);
-
-            return Ok();
-        }
-
-        [HttpPost("DeleteIndex")]
-        public async Task<IActionResult> DeleteIndex()
-        {
-            var result = await _elasticSearchService.DeleteIndex("blogs");
-            if (!result.Success)
-                return BadRequest(result);
-
-            return Ok();
-        }
-
-
-
-        private List<Blog> CreateBlogs()
-        {
-            List<Blog> blogs = new(){
-                new Blog
-                {
-                    Content= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    Title= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir." ,
-                    CategoryId=1,
-                    CreatedAt= DateTime.Now,
-                    Id=Guid.NewGuid(),
-                },
-                 new Blog
-                 {
-                    Content= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    Title= "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir." ,
-                    CategoryId=1,
-                    CreatedAt= DateTime.Now,
-                    Id=Guid.NewGuid(),
-                }
-            };
-            return blogs;
-        }
-
-        private Blog CreateBlog()
-        {
-            return new Blog
-            {
-                Content = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                Title = "Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                CategoryId = 1,
-                CreatedAt = DateTime.Now,
-                Id = Guid.NewGuid(),
-            };
         }
     }
 }

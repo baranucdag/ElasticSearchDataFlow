@@ -22,6 +22,13 @@ namespace ElasticSearchDataFlow.Data.Repositories
                 Table.AsNoTracking();
             return query;
         }
+
+        public IQueryable<T> GetAllPaginated(int index, int size)
+        {
+            var query = Table.Skip((index - 0) * size).Take(size).AsNoTracking();
+            return query;
+        }
+
         public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool tracking = true)
         {
             var query = Table.Where(expression);
@@ -89,7 +96,7 @@ namespace ElasticSearchDataFlow.Data.Repositories
             return entityEntry.State == EntityState.Modified;
         }
 
-        public async Task<int> SaveAsync()
+        public async Task<int> SaveChangesAsync()
             => await _context.SaveChangesAsync();
     }
 }

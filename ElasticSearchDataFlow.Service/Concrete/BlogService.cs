@@ -13,29 +13,30 @@ namespace ElasticSearchDataFlow.Service.Concrete
             _blogRepository = blogRepository;
         }
 
-        public List<Blog> GetBlogList()
+        public List<Blog> GetBlogList(int index, int size)
         {
-            return _blogRepository.GetAll().ToList();
+            return _blogRepository.GetAllPaginated(index, size).ToList();
         }
 
-
-        public async void AddBlog()
+        public void AddBlogs(List<Blog> datas)
         {
-            List<Blog> datas = new List<Blog>();
-
-            for (int x = 100000; x < 2500000; x++)
-            {
-                datas.Add(new Blog
-                {
-                    Content = $"{x} Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    Title = $"{x} {x} Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.",
-                    CategoryId = 2,
-                    CreatedAt = DateTime.Now.AddHours(x),
-                    Id = Guid.NewGuid(),
-                });
-            }
-
             _blogRepository.AddRange(datas);
         }
+
+        public async Task<bool> DeleteById(string id)
+        {
+            await _blogRepository.RemoveAsync(id);
+            await _blogRepository.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> Update(string id)
+        {
+            var entity = await _blogRepository.GetByIdAsync(id);
+            _blogRepository.Update(entity);
+            _blogRepository.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

@@ -8,6 +8,7 @@ namespace ElasticSearchDataFlow.Data.Repositories
     {
         DbSet<T> Table { get; }
         IQueryable<T> GetAll(bool tracking = true);
+        IQueryable<T> GetAllPaginated(int index, int size);
         IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool tracking = true);
         Task<T> GetSingleAsync(Expression<Func<T, bool>> expression, bool tracking = true);
         Task<T> GetByIdAsync(string id, bool tracking = true);
@@ -19,6 +20,6 @@ namespace ElasticSearchDataFlow.Data.Repositories
         Task<bool> RemoveAsync(string id);
         bool Update(T model);
 
-        Task<int> SaveAsync();
+        Task<int> SaveChangesAsync();
     }
 }
